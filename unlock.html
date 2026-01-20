@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Cryptex - Decrypt</title>
+
+<link rel="stylesheet" href="/assets/css/styles.css"/>
+
+</head>
+
+<body>
+
+<form class="form" id="form">
+  <div class="title">
+    Cryptex<br>
+    <span>Decrypt encrypted file (.ctx / .fs)</span>
+  </div>
+
+ <label class="file-wrap">
+  <span class="file-btn">Choose file</span>
+  <span class="file-name" id="fileName">No file chosen</span>
+  <input type="file" id="file" hidden>
+</label>
+
+
+  <input
+    class="input"
+    type="password"
+    id="password"
+    placeholder="Enter Decryption password"
+    required
+  >
+
+  <button class="button-confirm" id="unlockBtn" type="submit">
+    Decrypt & Download →
+  </button>
+  
+    <div id="status" style="font-size:14px; min-height:1em;"></div>
+
+</form>
+
+<!-- fs-lock.js will be attached here -->
+<script type="module" src="/assets/js/unlock.js"></script>
+
+</body>
+</html>
