@@ -116,6 +116,10 @@ form.addEventListener("submit", async (e) => {
 
   const file = fileInput.files[0];
   if (!file) return setStatus("No file selected", true);
+  
+  if (!file.name.toLowerCase().endsWith(".byts")) {
+  return setStatus("Invalid file type. Expected a .byts container.", true);
+}
 
   const password = passwordInput.value;
   if (!password) return setStatus("Password required", true);

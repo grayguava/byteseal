@@ -25,16 +25,16 @@
 /* ================= GLOBAL THEME ================= */
 
 :root {
-  --font-color: #2b2b2b;
-  --font-color-sub: #6f6f6f;
-  --bg-color: #f7f7f7;
-  --main-color: #b5b5b5;
-  --accent: #6f6f6f;
+--bg-color: #f7f7f7;
+--main-color: #b5b5b5;
+--font-color: #2b2b2b;
+--font-color-sub: #6f6f6f;
+--accent: #6f6f6f;
 }
 
 
 body {
-  background: #f7f7f7;
+  background: var(--bg-color);
   font-family: 'Space Grotesk', sans-serif;
   display: flex;
   justify-content: center;
@@ -68,12 +68,16 @@ body {
 }
 
 .title {
+  all: unset;
+  display: block;
+  cursor: pointer;
+
   font-family: 'ByteBounce', sans-serif;
- color: var(--font-color-sub);
+  color: var(--font-color-sub);
   font-size: clamp(70px, 18vw, 86px);
-  line-height: 1; /* critical */
-  margin: 0;
+  line-height: 1;
 }
+
 
 .subtitle {
   font-family: "Space Grotesk", sans-serif;
@@ -143,6 +147,11 @@ body {
   box-shadow: 2px 2px var(--main-color);
   font-weight: 600;
   font-size: 20px;
+}
+
+.file-btn:active {
+  box-shadow: 0px 0px var(--main-color);
+  transform: translate(2px, 2px);
 }
 
 .file-name {
