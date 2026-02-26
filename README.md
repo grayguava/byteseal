@@ -1,49 +1,54 @@
 ## What ByteSeal is for
 
-ByteSeal exists to do **one thing**:
+ByteSeal exists to do one thing:
 
-> **Take a file, encrypt it with a password, and return a single encrypted container.**
+> **Encrypt a file with a password and produce a single encrypted container.**
 
-You might use ByteSeal to:
+typical uses:
 
-- encrypt files before storing them in untrusted locations
-- move files between devices without exposing contents
-- keep a simple, offline encryption workflow
-- inspect or experiment with client-side cryptography in the browser
+- encrypting files before storing them in untrusted locations
+- moving files between devices without exposing contents
+- maintaining a simple, offline encryption workflow
+- experimenting with client-side cryptography in the browser
 
-There is no ecosystem, sync, or automation layer.
+ByteSeal is not an ecosystem.  
+It is a single-purpose encryption tool.
 
 ---
 
 ## What ByteSeal can do
 
-- Encrypt any file into a single encrypted container (`.byts`)
-- Decrypt `.byts` containers back to the original file
-- Preserve original filename and MIME type inside encrypted metadata
-- Run fully offline after initial page load
+- encrypt any file into a single encrypted container (`.byts`)
+- decrypt `.byts` containers back to the original file
+- preserve original filename and MIME type inside encrypted metadata
+- operate fully offline after the page has loaded
 
 ---
 
 ## What ByteSeal does **not** do
 
-- No password recovery
-- No cloud storage
-- No key management
-- No multi-file archives
-- No protection against a compromised system
+- no password recovery
+- no cloud storage
+- no key management system
+- no multi-file archives
+- no defense against a compromised system
 
-If the password is lost, the data is unrecoverable.  
-This is intentional.
+if the password is lost, the data is permanently unrecoverable.
 
 ---
 
 ## Technical overview
 
-- **Key derivation:** PBKDF2 (SHA-256, 250k iterations)
-- **Encryption:** AES-256-GCM
+- **Key derivation:** PBKDF2 (SHA-256, 250,000 iterations)
+- **Encryption:** AES-256-GCM (authenticated encryption)
 - **Randomness:** `crypto.getRandomValues`
 - **Environment:** Browser (Web Crypto API)
 - **Execution model:** Client-side only
+
+The PBKDF2 iteration count introduces a measurable delay during key derivation on typical hardware to increase resistance against offline guessing.
+
+AES-GCM provides both confidentiality and integrity.  
+modified containers or incorrect passwords will fail authentication and will not produce partial output.
 
 ---
 
@@ -54,8 +59,8 @@ This is intentional.
 
 - magic: "BYTESEAL" (8 bytes)
 - version: 0x01
-- salt: 16 bytes 
-- iv: 12 bytes 
+- salt: 16 bytes
+- iv: 12 bytes
 
 [ Encrypted payload (AES-256-GCM) ]
 
@@ -64,19 +69,27 @@ This is intentional.
 - raw file bytes
 ```
 
+all metadata is encrypted.
 
-All metadata is encrypted.  
-Encrypted output filenames are intentionally opaque and random.
+the container format is self-describing and validated by magic bytes and version before decryption.
+
+#### Specification
+
+The full binary container specification is available at:
+
+[`docs/spec-v1.md`](/docs/spec-v1.md)
+
+This document defines exact byte layout, key derivation parameters, and decryption behavior.
 
 ---
 
 ## Filenames and metadata
 
-- Output container filenames do **not** reveal the original filename
-- Original filename and MIME type are stored **inside encrypted metadata**
-- Filenames are restored only after successful decryption
+- output container filenames are randomly generated
+- original filename and MIME type are stored inside encrypted metadata
+- filenames are restored only after successful authentication
 
-This prevents metadata leakage from encrypted containers.
+encrypted containers do not reveal the original filename.
 
 ---
 
@@ -84,10 +97,16 @@ This prevents metadata leakage from encrypted containers.
 
 ByteSeal is designed to protect against:
 
-- cloud storage inspection
+- unauthorized inspection of stored files
+- cloud storage providers
 - curious servers
-- accidental file exposure
-- untrusted networks
+- interception of encrypted files
+
+Security assumes:
+
+- the attacker has access to the encrypted container
+- the attacker can perform unlimited offline password guessing attempts
+- the execution environment (browser and OS) is trusted
 
 ByteSeal does **not** protect against:
 
@@ -96,20 +115,20 @@ ByteSeal does **not** protect against:
 - compromised browsers or operating systems
 - weak or reused passwords
 
-ByteSeal assumes the execution environment is trusted.
+security strength depends entirely on password entropy.
 
 ---
 
 ## Limitations
 
-- Files are processed fully in memory  
-  (browser memory limits apply)
-- Very large files may fail on low-memory devices
-- Rendering decrypted files depends on external viewers
+- files are processed fully in memory (browser limits apply)
+- very large files may fail on low-memory devices
+- performance depends on device capability
+- no streaming encryption (entire file buffered)
 
 ---
 
-## Design
+## Design principles
 
 ByteSeal is intentionally:
 
@@ -117,9 +136,9 @@ ByteSeal is intentionally:
 - explicit
 - offline-first
 - scope-limited
-- boring
+- minimal in dependency surface
 
-It avoids feature creep, background services, and hidden behavior.
+it avoids feature creep, background services, and hidden behavior.
 
 ---
 

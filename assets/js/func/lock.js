@@ -1,8 +1,8 @@
 /*
-  Cryptex v2.1 — Lock
+  ByteSeal v1.2 — Lock
   (formerly FileSeal v1)
 
-  This tool ALWAYS writes the latest Cryptex format.
+  This tool ALWAYS writes the latest ByteSeal format.
   Legacy formats are NOT generated here.
 
   Container header (plaintext):

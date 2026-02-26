@@ -1,5 +1,5 @@
 /*
-  ByteSeal v1.0 — Unlock
+  ByteSeal v1.1 — Unlock
 
   Container header:
   [ 8  bytes ] magic

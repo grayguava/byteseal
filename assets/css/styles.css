@@ -25,13 +25,17 @@
 /* ================= GLOBAL THEME ================= */
 
 :root {
---bg-color: #f7f7f7;
---main-color: #b5b5b5;
---font-color: #2b2b2b;
---font-color-sub: #6f6f6f;
---accent: #6f6f6f;
+  --bg-color:      #141414;
+  --bg-raised:     #1f1f1f;
+  --main-color:    #666666;
+  --font-color:    #ebebeb;
+  --font-color-sub:#aaaaaa;
+  --accent:        #c8c8c8;
 }
 
+*, *::before, *::after {
+  box-sizing: border-box;
+}
 
 body {
   background: var(--bg-color);
@@ -41,21 +45,100 @@ body {
   align-items: center;
   min-height: 100svh;
   margin: 0;
-  padding: 16px;
+  padding: 12px 16px;
 }
 
-
-/* ================= CARD ================= */
+/* ================= CARD (two-halves on desktop) ================= */
 
 .card {
-  padding: 28px;
-  background: var(--bg-color);
+  background: var(--bg-raised);
   border-radius: 6px;
   border: 2px solid var(--main-color);
   box-shadow: 4px 4px var(--main-color);
   width: 100%;
-  max-width: 360px;
-  text-align: center;
+  max-width: 940px;
+  display: grid;
+  grid-template-columns: 5fr 1px 7fr;
+}
+
+/* ================= LEFT PANEL ================= */
+
+.panel-left {
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+/* ================= RIGHT PANEL ================= */
+
+.panel-right {
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-self: stretch;
+}
+
+/* ================= MODE SELECTOR ================= */
+
+.mode-select-wrap {
+  /* sits at the top of the right panel */
+}
+
+.mode-select {
+  display: inline-flex;
+  border: 1.8px solid var(--main-color);
+  border-radius: 6px;
+  box-shadow: 3px 3px var(--main-color);
+  background: var(--bg-raised);
+  overflow: hidden;
+}
+
+.mode-option {
+  all: unset;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 18px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--main-color);
+  cursor: pointer;
+  border-right: 1.8px solid var(--main-color);
+  transition: background 0.12s, color 0.12s;
+  white-space: nowrap;
+}
+
+.mode-option:last-child {
+  border-right: none;
+}
+
+.mode-option:hover {
+  background: var(--bg-color);
+  color: var(--font-color-sub);
+}
+
+.mode-option.active {
+  background: var(--bg-color);
+  color: var(--font-color);
+}
+
+.mode-option-icon {
+  display: flex;
+  align-items: center;
+  color: inherit;
+}
+
+/* ================= VERTICAL DIVIDER ================= */
+
+.divider-v {
+  width: 1px;
+  background-color: var(--main-color);
+  opacity: 0.35;
+  margin: 20px 0;
 }
 
 /* ================= BRANDING ================= */
@@ -63,58 +146,170 @@ body {
 .branding {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .title {
   all: unset;
   display: block;
   cursor: pointer;
-
   font-family: 'ByteBounce', sans-serif;
   color: var(--font-color-sub);
-  font-size: clamp(70px, 18vw, 86px);
+  font-size: clamp(48px, 8vw, 72px);
   line-height: 1;
 }
 
+.tagline {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  color: var(--font-color-sub);
+  line-height: 1.6;
+  margin-top: 6px;
+}
+
+/* ================= META BADGES (left panel) ================= */
+
+.meta-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid var(--main-color);
+}
+
+.meta-item {
+  font-size: 11px;
+  color: var(--font-color-sub);
+  letter-spacing: 0.3px;
+}
+
+/* ================= INFO SECTIONS (left panel) ================= */
+
+.info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.info-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--font-color-sub);
+  margin: 0;
+}
+
+.info-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.info-step {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.info-step-num {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--font-color-sub);
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+  width: 18px;
+}
+
+.info-step-text {
+  font-size: 14px;
+  color: var(--font-color-sub);
+  line-height: 1.4;
+}
+
+/* ================= FORMAT GRID (left panel) ================= */
+
+.format-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0;
+  border: 1.5px solid var(--main-color);
+  border-radius: 4px;
+  overflow: hidden;
+  font-size: 10px;
+  text-align: center;
+}
+
+.format-cell {
+  display: block;
+  padding: 5px 4px;
+  color: var(--font-color-sub);
+  border-right: 1px solid var(--main-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.4;
+}
+
+.format-cell:nth-child(5),
+.format-cell:nth-child(10) {
+  border-right: none;
+}
+
+.format-cell.head {
+  background: var(--main-color);
+  color: var(--bg-color);
+  font-size: 11px;
+  letter-spacing: 0.3px;
+  border-right: 1px solid rgba(255,255,255,0.3);
+  border-bottom: none;
+}
+
+.format-cell.head:nth-child(5) {
+  border-right: none;
+}
+
+/* ================= CODE TAG ================= */
+
+code {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 0.9em;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid var(--main-color);
+  border-radius: 3px;
+  padding: 1px 5px;
+  color: var(--font-color);
+}
+
+/* ================= SUBTITLE (lock/unlock — left panel) ================= */
 
 .subtitle {
-  font-family: "Space Grotesk", sans-serif;
-  font-size: clamp(16px, 4.5vw, 22px);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(15px, 3vw, 20px);
   color: var(--font-color-sub);
-  margin-top: 6px; /* YOU control spacing now */
+  margin-top: 8px;
 }
 
-
-/* ================= DIVIDER ================= */
-
-.divider {
-  width: 100%;
-  height: 1px;
-  background-color: var(--main-color);
-  opacity: 0.35;
-  margin: 18px 0 26px;
-}
-
-/* ================= SYSTEM ================= */
+/* ================= RIGHT PANEL — SYSTEM / FORM ================= */
 
 .system {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 14px;
+  width: 100%;
 }
 
 /* ================= INPUT ================= */
 
 .input {
-  width: 90%;
+  width: 100%;
   height: 44px;
   border-radius: 5px;
   border: 2px solid var(--main-color);
   background-color: var(--bg-color);
   box-shadow: 4px 4px var(--main-color);
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 800;
   color: var(--font-color);
   padding: 8px 12px;
@@ -124,123 +319,250 @@ body {
 
 .input::placeholder {
   color: var(--font-color-sub);
+  font-weight: 400;
 }
 
-/* ================= FILE PICKER ================= */
+/* ================= DROP ZONE ================= */
 
-.file-wrap {
+.drop-zone {
+  position: relative;
+  border: 2px dashed var(--main-color);
+  border-radius: 6px;
+  padding: 16px 20px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 14px;
-  flex-wrap: wrap;
+  gap: 6px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  text-align: center;
+  background: transparent;
 }
 
-.file-btn {
+.drop-zone:hover,
+.drop-zone.drag-over {
+  border-color: var(--font-color-sub);
+  background: rgba(255,255,255,0.04);
+}
+
+.drop-zone.has-file {
+  border-style: solid;
+  border-color: var(--font-color-sub);
+}
+
+.drop-input {
+  /* hidden but still accessible via label */
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
   cursor: pointer;
 }
 
-
-.file-btn {
-  padding: 6px 12px;
-  border: 1.8px solid var(--main-color);
-  border-radius: 4px;
-  box-shadow: 2px 2px var(--main-color);
-  font-weight: 600;
-  font-size: 20px;
+.drop-icon {
+  color: var(--main-color);
+  display: flex;
+  pointer-events: none;
+  transition: color 0.15s;
 }
 
-.file-btn:active {
-  box-shadow: 0px 0px var(--main-color);
-  transform: translate(2px, 2px);
-}
-
-.file-name {
+.drop-zone:hover .drop-icon,
+.drop-zone.drag-over .drop-icon {
   color: var(--font-color-sub);
-  font-size: 20px;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+}
+
+.drop-text {
+  margin: 0;
+  font-size: 14px;
+  color: var(--font-color-sub);
+  pointer-events: none;
+}
+
+.drop-browse {
+  cursor: pointer;
+  text-decoration: underline;
+  color: var(--font-color);
+  pointer-events: all;
+  position: relative;
+  z-index: 1;
+}
+
+.drop-hint {
+  margin: 0;
+  font-size: 13px;
+  color: var(--main-color);
+  pointer-events: none;
+}
+
+.drop-hint.has-file {
+  color: var(--font-color-sub);
+  font-weight: 600;
 }
 
 /* ================= BUTTON ================= */
 
 .button-confirm {
-  margin-top: 6px;
   width: 100%;
-  max-width: 260px;
   height: 44px;
   align-self: center;
-
   border-radius: 6px;
   border: 1.5px solid var(--accent);
-  background-color: #ffffff;
-
-  box-shadow: 3px 3px var(--accent);
-
+  background-color: var(--bg-raised);
+  box-shadow: 3px 3px var(--main-color);
   font-size: 16px;
   font-weight: 600;
   color: var(--accent);
-
   cursor: pointer;
   font-family: "Space Grotesk";
 }
-
 
 .button-confirm:active {
   box-shadow: 0px 0px var(--main-color);
   transform: translate(3px, 3px);
 }
 
-/* Allow button-confirm to be used on <a> */
-a.button-confirm {
-  max-height: 32px;
-  text-decoration: none;
+/* ================= PASSWORD WRAP + TOGGLE ================= */
+
+.pw-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.pw-wrap .input {
+  width: 100%;
+  padding-right: 44px; /* room for the toggle button */
+}
+
+.pw-toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: var(--font-color-sub);
+  transition: color 0.15s;
 }
 
-
-/* ================= TEXT & LINKS ================= */
-
-p {
-  margin: 12px 0 20px;
-  color: #666;
-  font-size: 14px;
+.pw-toggle:hover {
+  color: var(--font-color);
 }
 
-a {
-  display: block;
-  margin: 10px auto;
-  padding: 10px;
-  width: 100%;
-  max-width: 260px;
-  text-decoration: none;
-  color: #2b2b2b;
-  border: 2px solid var(--main-color);
-  border-radius: 5px;
-  font-weight: 600;
-  box-shadow: 3px 3px var(--main-color);
+/* ================= STATUS ================= */
+
+#status {
+  font-size: 13px;
+  min-height: 18px;
   text-align: center;
+  font-weight: 500;
 }
 
-a:active {
-  box-shadow: 0px 0px var(--main-color);
-  transform: translate(3px, 3px);
+/* lock.js / unlock.js set inline style.color — boost specificity to override */
+#status[style*="#a33"] {
+  color: #ff4444 !important;
+}
+#status[style*="#222"] {
+  color: #2b2b2b !important;
 }
 
-/* ================= INDEX ================= */
+/* ================= GITHUB LINK ================= */
 
-.index-actions {
+.github-link-wrap {
+  margin-top: auto;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  justify-content: flex-end;
 }
 
-@media (max-width: 480px) {
+.github-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--font-color-sub);
+  text-decoration: none;
+  opacity: 0.6;
+  transition: opacity 0.15s, color 0.15s;
+}
+
+.github-link:hover {
+  opacity: 1;
+  color: var(--font-color);
+}
+
+/* ================= VIEW TRANSITION ================= */
+
+.view-in {
+  animation: viewFade 0.2s ease both;
+}
+
+@keyframes viewFade {
+  from { opacity: 0; transform: translateY(5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 600px) {
   body {
-    align-items: flex-start;   /* stop floating */
+    align-items: flex-start;
+    padding: 16px;
   }
 
+  .card {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    max-width: 100%;
+    min-height: unset;
+  }
+
+  .panel-left {
+    padding: 28px 24px 20px;
+    gap: 16px;
+  }
+
+  .panel-right {
+    padding: 0 24px 28px;
+    gap: 18px;
+  }
+
+  .divider-v {
+    width: calc(100% - 48px);
+    height: 1px;
+    margin: 0 24px;
+  }
+
+  .title {
+    font-size: clamp(60px, 22vw, 80px);
+  }
+
+  .mode-select {
+    width: 100%;
+  }
+
+  .mode-option {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .meta-list {
+    display: none;
+  }
+
+  .github-link-wrap {
+    justify-content: center;
+    padding-top: 8px;
+    border-top: 1px solid var(--main-color);
+  }
+
+  .system {
+    gap: 16px;
+  }
 }
