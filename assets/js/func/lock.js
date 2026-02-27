@@ -21,23 +21,14 @@
 
 import { ACTIVE_FORMAT } from "./version.js";
 
-// =====================
-// Constants
-// =====================
 const MAGIC = new TextEncoder().encode(ACTIVE_FORMAT.magic);
 const VERSION = ACTIVE_FORMAT.version;
-
 const MAGIC_LEN = ACTIVE_FORMAT.magicLen;
 const VERSION_LEN = 1;
 const SALT_LEN = 16;
 const IV_LEN = 12;
-
 const HEADER_LEN = MAGIC_LEN + VERSION_LEN + SALT_LEN + IV_LEN;
 const PBKDF2_ITERS = 250000;
-
-// =====================
-// DOM
-// =====================
 const form = document.getElementById("form");
 const fileInput = document.getElementById("file");
 const passwordInput = document.getElementById("password");
@@ -45,23 +36,19 @@ const status = document.getElementById("status");
 const lockBtn = document.getElementById("lockBtn");
 const fileNameEl = document.getElementById("fileName");
 
-// =====================
-// Helpers
-// =====================
 if (fileInput && fileNameEl) {
   fileInput.addEventListener("change", () => {
     fileNameEl.textContent =
       fileInput.files.length ? fileInput.files[0].name : "No file chosen";
   });
 }
-
 function setStatus(msg, isError = false) {
   status.textContent = msg;
   status.style.color = isError ? "#a33" : "#222";
 }
-
 async function deriveKey(password, salt) {
   const enc = new TextEncoder();
+
   const baseKey = await crypto.subtle.importKey(
     "raw",
     enc.encode(password),
@@ -69,8 +56,9 @@ async function deriveKey(password, salt) {
     false,
     ["deriveKey"]
   );
-
-  return crypto.subtle.deriveKey(
+  
+  const start = performance.now();
+  const key = await crypto.subtle.deriveKey(
     {
       name: "PBKDF2",
       salt,
@@ -82,11 +70,12 @@ async function deriveKey(password, salt) {
     false,
     ["encrypt"]
   );
-}
 
-// =====================
-// Main
-// =====================
+  const end = performance.now();
+  console.log(`PBKDF2 ${PBKDF2_ITERS} iterations took ${(end - start).toFixed(2)} ms`);
+
+  return key;
+}
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   setStatus("");

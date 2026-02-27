@@ -21,23 +21,14 @@ class CryptoAuthError extends Error {
   }
 }
 
-
 import { FORMATS } from "./version.js";
 
-// =====================
-// Constants
-// =====================
 const MAGIC_LEN = 8;
 const VERSION_LEN = 1;
 const SALT_LEN = 16;
 const IV_LEN = 12;
-
 const HEADER_LEN = MAGIC_LEN + VERSION_LEN + SALT_LEN + IV_LEN;
 const PBKDF2_ITERS = 250000;
-
-// =====================
-// DOM
-// =====================
 const form = document.getElementById("form");
 const fileInput = document.getElementById("file");
 const fileNameEl = document.getElementById("fileName");
@@ -45,26 +36,17 @@ const passwordInput = document.getElementById("password");
 const status = document.getElementById("status");
 const unlockBtn = document.getElementById("unlockBtn");
 
-// =====================
-// Helpers
-// =====================
+
 if (fileInput && fileNameEl) {
   fileInput.addEventListener("change", () => {
     fileNameEl.textContent =
       fileInput.files.length ? fileInput.files[0].name : "No file chosen";
   });
 }
-
 function setStatus(msg, isError = false) {
   status.textContent = msg;
   status.style.color = isError ? "#a33" : "#222";
 }
-
-/*
-  IMPORTANT:
-  Binary format detection MUST be byte-wise.
-  Do NOT decode magic as text — mobile browsers will break it.
-*/
 function detectFormat(buf) {
   for (const fmt of Object.values(FORMATS)) {
     const magicBytes = new TextEncoder().encode(fmt.magic);
@@ -85,6 +67,7 @@ function detectFormat(buf) {
 
 async function deriveKey(password, salt) {
   const enc = new TextEncoder();
+
   const baseKey = await crypto.subtle.importKey(
     "raw",
     enc.encode(password),
@@ -92,34 +75,43 @@ async function deriveKey(password, salt) {
     false,
     ["deriveKey"]
   );
+  const runs = 3;
+  const start = performance.now();
 
-  return crypto.subtle.deriveKey(
-    {
-      name: "PBKDF2",
-      salt,
-      iterations: PBKDF2_ITERS,
-      hash: "SHA-256",
-    },
-    baseKey,
-    { name: "AES-GCM", length: 256 },
-    false,
-    ["decrypt"]
+  let key;
+  for (let i = 0; i < runs; i++) {
+    key = await crypto.subtle.deriveKey(
+      {
+        name: "PBKDF2",
+        salt,
+        iterations: PBKDF2_ITERS,
+        hash: "SHA-256",
+      },
+      baseKey,
+      { name: "AES-GCM", length: 256 },
+      false,
+      ["decrypt"]
+    );
+  }
+
+  const end = performance.now();
+  console.log(
+    `Average DECRYPT PBKDF2 time: ${((end - start) / runs).toFixed(2)} ms`
   );
+
+  return key;
 }
 
-// =====================
-// Main
-// =====================
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   setStatus("");
 
   const file = fileInput.files[0];
   if (!file) return setStatus("No file selected", true);
-  
+
   if (!file.name.toLowerCase().endsWith(".byts")) {
-  return setStatus("Invalid file type. Expected a .byts container.", true);
-}
+    return setStatus("Invalid file type. Expected a .byts container.", true);
+  }
 
   const password = passwordInput.value;
   if (!password) return setStatus("Password required", true);
@@ -146,31 +138,36 @@ form.addEventListener("submit", async (e) => {
     const iv = buf.slice(ivOff, ivOff + IV_LEN);
     const ct = buf.slice(ctOff);
 
+    const fullStart = performance.now();
+
     setStatus("Deriving key…");
     const key = await deriveKey(password, salt.buffer);
 
     setStatus("Decrypting…");
     let plaintext;
 
-try {
-  plaintext = new Uint8Array(
-    await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, ct)
-  );
-} catch {
-  throw new CryptoAuthError();
-}
+    try {
+      plaintext = new Uint8Array(
+        await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, ct)
+      );
+    } catch {
+      throw new CryptoAuthError();
+    }
 
+    const fullEnd = performance.now();
+    console.log(
+      `FULL DECRYPT FLOW took ${(fullEnd - fullStart).toFixed(2)} ms`
+    );
 
     if (plaintext.length < 4)
-  throw new Error("Decrypted payload is invalid");
+      throw new Error("Decrypted payload is invalid");
 
-const view = new DataView(plaintext.buffer);
-const metaLen = view.getUint32(0, false);
+    const view = new DataView(plaintext.buffer);
+    const metaLen = view.getUint32(0, false);
 
-if (metaLen <= 0 || metaLen > plaintext.length - 4)
-  throw new Error("Decrypted metadata is corrupted");
+    if (metaLen <= 0 || metaLen > plaintext.length - 4)
+      throw new Error("Decrypted metadata is corrupted");
 
-    
     const metaJson = new TextDecoder("utf-8", { fatal: true }).decode(
       plaintext.slice(4, 4 + metaLen)
     );
@@ -188,17 +185,13 @@ if (metaLen <= 0 || metaLen > plaintext.length - 4)
     URL.revokeObjectURL(a.href);
 
     setStatus(`File restored (${format.label})`);
-    
   } catch (err) {
-  if (err instanceof CryptoAuthError) {
-    setStatus("Wrong password or file was modified", true);
-  } else {
-    setStatus(err.message || "Decryption failed", true);
-  }
-}
-
-  
-  finally {
+    if (err instanceof CryptoAuthError) {
+      setStatus("Wrong password or file was modified", true);
+    } else {
+      setStatus(err.message || "Decryption failed", true);
+    }
+  } finally {
     unlockBtn.disabled = false;
   }
 });
